@@ -12,6 +12,8 @@ package ua.pp.incm.advertisingcampaign.models;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Id;
+
 public class Advertisement {
   @Id
   private int id;
