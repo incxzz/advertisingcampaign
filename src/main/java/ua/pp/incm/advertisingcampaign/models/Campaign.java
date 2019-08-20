@@ -9,92 +9,87 @@
 
 package ua.pp.incm.advertisingcampaign.models;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.Objects;
 
-public class Campaign {
-  private int id;
-  private String name;
-  private int status;
+public class Campaign extends CampaignBase implements Serializable
+{
+  private static final long serialVersionUID = -1674028527140787061L;
   private Date startDate;
   private Date endDate;
 
-  public Campaign() {
+  public Campaign()
+  {
+  }
+  
+  public Campaign(int id, String name, int status, Date startDate, Date endDate)
+  {
+     super(id, name, status);
+     this.startDate = startDate;
+     this.endDate = endDate;
   }
 
-  public Campaign(int id, String name, int status, Date startDate, Date endDate) {
-    this.id = id;
-    this.name = name;
-    this.status = status;
-    this.startDate = startDate;
-    this.endDate = endDate;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public int getStatus() {
-    return status;
-  }
-
-  public void setStatus(int status) {
-    this.status = status;
-  }
-
-  public Date getStartDate() {
+  public Date getStartDate()
+  {
     return startDate;
   }
 
-  public void setStartDate(Date startDate) {
-    this.startDate = startDate;
+  public void setStartDate(Date startDate)
+  {
+     this.startDate = startDate;
   }
 
-  public Date getEndDate() {
-    return endDate;
+  public Date getEndDate()
+  {
+     return endDate;
   }
 
-  public void setEndDate(Date endDate) {
-    this.endDate = endDate;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Campaign)) return false;
-    Campaign campaign = (Campaign) o;
-    return id == campaign.id &&
-        status == campaign.status &&
-        Objects.equals(name, campaign.name) &&
-        Objects.equals(startDate, campaign.startDate) &&
-        Objects.equals(endDate, campaign.endDate);
+  public void setEndDate(Date endDate)
+  {
+     this.endDate = endDate;
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(id, name, status, startDate, endDate);
+  public int hashCode()
+  {
+     final int prime = 31;
+     int result = super.hashCode();
+     result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
+     result = prime * result + ((startDate == null) ? 0 : startDate.hashCode());
+     return result;
   }
 
   @Override
-  public String toString() {
-    return "Campaign{" +
-        "id=" + id +
-        ", name='" + name + '\'' +
-        ", status=" + status +
-        ", startDate=" + startDate +
-        ", endDate=" + endDate +
-        '}';
+  public boolean equals(Object obj)
+  {
+     if (this == obj)
+        return true;
+     if (!super.equals(obj))
+        return false;
+     if (getClass() != obj.getClass())
+        return false;
+     Campaign other = (Campaign) obj;
+     if (endDate == null)
+     {
+        if (other.endDate != null)
+           return false;
+     }
+     else if (!endDate.equals(other.endDate))
+        return false;
+     if (startDate == null)
+     {
+        if (other.startDate != null)
+           return false;
+     }
+     else if (!startDate.equals(other.startDate))
+        return false;
+     return true;
   }
+
+  @Override
+  public String toString()
+  {
+     return "Campaign [startDate=" + startDate + ", endDate=" + endDate + "]";
+  }
+
 }

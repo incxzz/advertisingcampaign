@@ -9,13 +9,13 @@
 
 package ua.pp.incm.advertisingcampaign.models;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.Id;
-
-public class Advertisement {
-  @Id
+public class Advertisement implements Serializable{
+ 
+  private static final long serialVersionUID = -8511588144196291777L;
   private int id;
   private String name;
   private int status;
