@@ -23,6 +23,7 @@ import ua.pp.incm.advertisingcampaign.models.Advertisement;
 import ua.pp.incm.advertisingcampaign.models.requests.AdvertisementWithCampaignId;
 import ua.pp.incm.advertisingcampaign.models.requests.SearchCriteria;
 import ua.pp.incm.advertisingcampaign.repositories.IAdvertisementRepository;
+import ua.pp.incm.advertisingcampaign.repositories.ICampaignRepository;
 
 @Repository
 @Transactional(propagation=Propagation.REQUIRED)
@@ -31,13 +32,16 @@ public class AdvertisementRepository implements IAdvertisementRepository
   private static final String SELECT_ADS_SQL = "select id, name, status, asset_url from advertisements where id=?";
   private static final String INSERT_ADS_SQL = "insert into advertisements (name, status, asset_url) values(?, ?, ?)";
   private static final String INSERT_CAMP_ADS_SQL = "insert into campaign_ads(campaign, ads) values(?, ?)";
+
   private Logger log = LoggerFactory.getLogger(this.getClass());
   private JdbcTemplate jdbcTemplate;
+  private ICampaignRepository campaignRepository; 
 
-
-  public AdvertisementRepository(@Autowired JdbcTemplate jdbcTemplate)
+  public AdvertisementRepository(@Autowired JdbcTemplate jdbcTemplate, @Autowired ICampaignRepository campaignRepository)
    {
       this.jdbcTemplate = jdbcTemplate;
+      this.campaignRepository = campaignRepository;
+
       AdvertisementWithCampaignId advertisementWithCampaignId = new AdvertisementWithCampaignId(10, "test ads", 1, null,"url", 1);
       try {
         Advertisement ad = postAdvertisementWithCampaignId(advertisementWithCampaignId);
@@ -70,11 +74,15 @@ public class AdvertisementRepository implements IAdvertisementRepository
    public Advertisement postAdvertisementWithCampaignId(AdvertisementWithCampaignId advertisementWithCampaignId) throws SQLException, DataInconsistencyException {
 
      if(advertisementWithCampaignId.getCampaignId() == null){
-       throw new DataInconsistencyException("Ads has not any campaign", 1);
+       throw new DataInconsistencyException("Ads has not any campaign", -1);
      }
 
      if(advertisementWithCampaignId.getPlatforms() == null || advertisementWithCampaignId.getPlatforms().size() < 1){
-       throw new DataInconsistencyException("Ads has not any platforms", 1);
+       throw new DataInconsistencyException("Ads has not any platforms", -1);
+     }
+     
+     if(campaignRepository.getCampaignById(advertisementWithCampaignId.getCampaignId()) == null){
+        throw new DataInconsistencyException("Ads contain nonexistent campaign", -2); 
      }
 
      KeyHolder keyAds = new GeneratedKeyHolder();
@@ -86,18 +94,11 @@ public class AdvertisementRepository implements IAdvertisementRepository
            ps.setString(3, advertisementWithCampaignId.getAssetUrl());
            return ps;
          }, keyAds);
-
      if(res <= 0){
        throw new SQLException("Error insert new ads");
      }
-     try {
-       res = jdbcTemplate.update(INSERT_CAMP_ADS_SQL, advertisementWithCampaignId.getCampaignId(), keyAds.getKey().intValue());
-     }catch (DataIntegrityViolationException e){
-       e.printStackTrace();
-       log.error(e.getMessage());
-       throw e;
-     }
 
+     res = jdbcTemplate.update(INSERT_CAMP_ADS_SQL, advertisementWithCampaignId.getCampaignId(), keyAds.getKey().intValue());
      if(res <= 0){
        throw new SQLException("Error insert links campaign to ads");
      }
