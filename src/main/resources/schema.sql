@@ -25,7 +25,8 @@ create table campaigns(id identity primary key auto_increment,
 create table advertisements(id identity primary key auto_increment,
                             name varchar(255) not null,
                             status integer,
-                            assetUrl varchar(255),
+                            asset_url varchar(255),
+                            primary key (id),
                             constraint fk_ads_status_id foreign key(status) references statuses(id)
                            );
 

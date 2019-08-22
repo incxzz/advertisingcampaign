@@ -9,22 +9,25 @@ public class AdvertisementWithCampaignId extends Advertisement implements Serial
 {
 
   private static final long serialVersionUID = -4478378392479615615L;
-  private Integer CampaignId;
-  
+  private Integer campaignId;
+
+  public AdvertisementWithCampaignId() {
+  }
+
   public AdvertisementWithCampaignId(int id, String name, int status, List<Integer> platforms, String assetUrl, Integer CampaignId)
   {
      super(id, name, status, platforms, assetUrl);
-     this.CampaignId = CampaignId;
+     this.campaignId = CampaignId;
   }
 
   public Integer getCampaignId()
   {
-     return CampaignId;
+     return campaignId;
   }
 
   public void setCampaignId(Integer campaignId)
   {
-    CampaignId = campaignId;
+    this.campaignId = campaignId;
   }
 
   @Override
@@ -32,7 +35,7 @@ public class AdvertisementWithCampaignId extends Advertisement implements Serial
   {
      final int prime = 31;
      int result = super.hashCode();
-     result = prime * result + ((CampaignId == null) ? 0 : CampaignId.hashCode());
+     result = prime * result + ((campaignId == null) ? 0 : campaignId.hashCode());
      return result;
   }
 
@@ -46,12 +49,12 @@ public class AdvertisementWithCampaignId extends Advertisement implements Serial
      if (getClass() != obj.getClass())
         return false;
      AdvertisementWithCampaignId other = (AdvertisementWithCampaignId) obj;
-     if (CampaignId == null)
+     if (campaignId == null)
      {
-        if (other.CampaignId != null)
+        if (other.campaignId != null)
            return false;
      }
-     else if (!CampaignId.equals(other.CampaignId))
+     else if (!campaignId.equals(other.campaignId))
         return false;
      return true;
   }

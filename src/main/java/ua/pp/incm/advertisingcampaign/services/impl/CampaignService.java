@@ -7,7 +7,7 @@
  * @author : Mahony Y. A. aka incm
  */
 
-package ua.pp.incm.advertisingcampaign.services;
+package ua.pp.incm.advertisingcampaign.services.impl;
 
 public class CampaignService {
 }
