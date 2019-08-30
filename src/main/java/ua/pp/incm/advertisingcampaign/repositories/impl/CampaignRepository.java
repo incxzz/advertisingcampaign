@@ -13,10 +13,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import ua.pp.incm.advertisingcampaign.exceptions.DataInconsistencyException;
+import ua.pp.incm.advertisingcampaign.models.Advertisement;
 import ua.pp.incm.advertisingcampaign.models.Campaign;
 import ua.pp.incm.advertisingcampaign.models.requests.CampaignWithAdsId;
 import ua.pp.incm.advertisingcampaign.models.requests.SearchCriteria;
 import ua.pp.incm.advertisingcampaign.models.responses.CampaignSummary;
+import ua.pp.incm.advertisingcampaign.repositories.IAdvertisementRepository;
 import ua.pp.incm.advertisingcampaign.repositories.ICampaignRepository;
 
 @Repository
@@ -24,13 +27,25 @@ import ua.pp.incm.advertisingcampaign.repositories.ICampaignRepository;
 public class CampaignRepository implements ICampaignRepository
 {
    private static final String SELECT_CAMPAIGN_SQL = "select id, name, status, start_date, end_date from campaigns where id=?";
+   private static final String INSERT_CAMPAIGN_SQL = "insert into campaigns (name, status, start_date, end_date) values(?, ?, ?, ?)";
+   
 
    private Logger log = LoggerFactory.getLogger(this.getClass());
    private JdbcTemplate jdbcTemplate;
+   private IAdvertisementRepository advertisementRepository;
    
    public CampaignRepository(@Autowired JdbcTemplate jdbcTemplate)
    {
       this.jdbcTemplate = jdbcTemplate;
+   }
+
+   @Autowired
+   public void setAdvertisementRepository(@Autowired IAdvertisementRepository advertisementRepository){
+      this.advertisementRepository = advertisementRepository;
+      if(this.advertisementRepository instanceof AdvertisementRepository){
+         ((AdvertisementRepository) (this.advertisementRepository)).setCampaignRepository(this);
+      }
+      
    }
 
    @Override
@@ -55,9 +70,16 @@ public class CampaignRepository implements ICampaignRepository
    }
 
    @Override
-   public Campaign postCampaignWithAdsIds(CampaignWithAdsId campaignWithAdsId)
+   @Transactional(propagation= Propagation.REQUIRED)
+   public Campaign postCampaignWithAdsIds(CampaignWithAdsId campaignWithAdsId) throws DataInconsistencyException
    {
-      // TODO Auto-generated method stub
+      if(campaignWithAdsId.getAds() == null){
+         throw new DataInconsistencyException("Campaign has not any ads", -1);
+      }
+      List<Advertisement> ads = advertisementRepository.getAdvertisementsByIds(campaignWithAdsId.getAds());
+      if(ads.size() != campaignWithAdsId.getAds().size()){
+         throw new DataInconsistencyException("Campaign contain nonexistent ads", -1);
+      }
       return null;
    }
 

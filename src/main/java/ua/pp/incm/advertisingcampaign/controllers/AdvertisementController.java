@@ -48,11 +48,11 @@ public class AdvertisementController {
     return advertisementService.postAdvertisementWithCampaignId(advertisementWithCampaignId);
   }
 
-  @ResponseStatus(code = HttpStatus.FAILED_DEPENDENCY)
+/*  @ResponseStatus(code = HttpStatus.FAILED_DEPENDENCY)
   class CustomException extends DataInconsistencyException {
     public CustomException(String message, Integer errorCode) {
       super(message, errorCode);
     }
-  }
+  }*/
 
 }

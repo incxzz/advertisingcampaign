@@ -37,7 +37,7 @@ public class AdvertisementService implements IAdvertisementService {
 
   @Override
   public List<Advertisement> getAdvertisementsByCriteria(SearchCriteria criteria) {
-    return null;
+    return advertisementRepository.getAdvertisementsByCriteria(criteria);
   }
 
   @Override
@@ -47,11 +47,11 @@ public class AdvertisementService implements IAdvertisementService {
 
   @Override
   public Advertisement putAdvertisementWithCampaignId(AdvertisementWithCampaignId advertisementWithCampaignId) {
-    return null;
+    return advertisementRepository.putAdvertisementWithCampaignId(advertisementWithCampaignId);
   }
 
   @Override
   public Boolean deleteAdvertisementById(Integer id) {
-    return null;
+    return advertisementRepository.deleteAdvertisementById(id);
   }
 }

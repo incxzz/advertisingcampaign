@@ -24,23 +24,26 @@ import ua.pp.incm.advertisingcampaign.models.requests.AdvertisementWithCampaignI
 import ua.pp.incm.advertisingcampaign.models.requests.SearchCriteria;
 import ua.pp.incm.advertisingcampaign.repositories.IAdvertisementRepository;
 import ua.pp.incm.advertisingcampaign.repositories.ICampaignRepository;
+import ua.pp.incm.advertisingcampaign.services.IDataTransformerService;
 
 @Repository
 @Transactional(propagation=Propagation.REQUIRED)
 public class AdvertisementRepository implements IAdvertisementRepository
 {
   private static final String SELECT_ADS_SQL = "select id, name, status, asset_url from advertisements where id=?";
+  private static final String SELECT_ADS_IN_SQL = "select id, name, status, asset_url from advertisements where id in (?)";
   private static final String INSERT_ADS_SQL = "insert into advertisements (name, status, asset_url) values(?, ?, ?)";
   private static final String INSERT_CAMP_ADS_SQL = "insert into campaign_ads(campaign, ads) values(?, ?)";
 
   private Logger log = LoggerFactory.getLogger(this.getClass());
   private JdbcTemplate jdbcTemplate;
   private ICampaignRepository campaignRepository; 
+  private IDataTransformerService dataTransformerService; 
 
-  public AdvertisementRepository(@Autowired JdbcTemplate jdbcTemplate, @Autowired ICampaignRepository campaignRepository)
+  public AdvertisementRepository(@Autowired JdbcTemplate jdbcTemplate, @Autowired IDataTransformerService dataTransformerService)
    {
       this.jdbcTemplate = jdbcTemplate;
-      this.campaignRepository = campaignRepository;
+      this.dataTransformerService = dataTransformerService;
 
       AdvertisementWithCampaignId advertisementWithCampaignId = new AdvertisementWithCampaignId(10, "test ads", 1, null,"url", 1);
       try {
@@ -55,6 +58,10 @@ public class AdvertisementRepository implements IAdvertisementRepository
 
    }
 
+   public void setCampaignRepository(ICampaignRepository campaignRepository){
+      this.campaignRepository = campaignRepository;
+   }
+
    @Override
    public Advertisement getAdvertisementById(Integer id)
    {
@@ -62,6 +69,11 @@ public class AdvertisementRepository implements IAdvertisementRepository
      return result.size() == 1 ? result.get(0) : null;
    }
 
+   @Override
+   public List<Advertisement> getAdvertisementsByIds(List<Integer> ids){
+      return jdbcTemplate.query(SELECT_ADS_IN_SQL, new Object[] { dataTransformerService.getStringFromList(ids, ',') }, new AdvertisementRowMapper());
+   }
+   
    @Override
    public List<Advertisement> getAdvertisementsByCriteria(SearchCriteria criteria)
    {

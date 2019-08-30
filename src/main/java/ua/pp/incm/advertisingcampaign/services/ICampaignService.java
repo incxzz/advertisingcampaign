@@ -1,4 +1,4 @@
-package ua.pp.incm.advertisingcampaign.repositories;
+package ua.pp.incm.advertisingcampaign.services;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import ua.pp.incm.advertisingcampaign.models.requests.CampaignWithAdsId;
 import ua.pp.incm.advertisingcampaign.models.requests.SearchCriteria;
 import ua.pp.incm.advertisingcampaign.models.responses.CampaignSummary;
 
-public interface ICampaignRepository
+public interface ICampaignService
 {
    Campaign getCampaignById(Integer id);
    List<Campaign> getCampaignsByCriteria(SearchCriteria criteria);
